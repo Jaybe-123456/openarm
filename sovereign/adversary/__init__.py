@@ -1,0 +1,1 @@
+"""Adversary package for SOVEREIGN."""
