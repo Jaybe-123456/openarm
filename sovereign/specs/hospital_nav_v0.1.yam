@@ -1,0 +1,72 @@
+version: v0.1
+project: SOVEREIGN
+scenario: hospital_corridor_navigation
+
+robot:
+  asset_uri: package://TBD/base_mobile_robot
+  sensors:
+    lidar_topic: /scan
+    odom_topic: /odom
+    imu_topic: /imu
+  ros2_nav2_topics:
+    cmd_vel: /cmd_vel
+    global_plan: /plan
+    localization: /amcl_pose
+
+scene:
+  corridor:
+    length_m: 70.0
+    width_m: 2.8
+  static_obstacles:
+    wall_padding_m: 0.1
+    equipment_bays: 6
+    nurse_stations: 2
+  dynamic_agents:
+    humans_nominal: 6
+    humans_max: 12
+
+task:
+  start_pose:
+    x_m: 3.0
+    y_m: 1.2
+    yaw_rad: 0.0
+  goal_pose:
+    x_m: 64.5
+    y_m: 1.5
+    yaw_rad: 0.0
+  constraints:
+    max_speed_mps: 1.0
+    no_go_zones:
+      - med_cart_bay
+
+adversary:
+  enabled: true
+  seed: 1337
+  intensity: 0.65
+  suite:
+    - human_crossing
+    - corridor_block
+    - sensor_noise_burst
+
+metrics:
+  ars:
+    weights:
+      safety: 0.50
+      efficiency: 0.25
+      comfort: 0.15
+      compliance: 0.10
+    thresholds:
+      min_pass: 0.80
+      min_safety: 0.95
+      max_collisions: 0
+  artifacts:
+    run_summary_json: artifacts/run_summary.json
+    event_log_jsonl: artifacts/event_log.jsonl
+    ars_timeseries_csv: artifacts/ars_timeseries.csv
+
+run:
+  dt_s: 0.1
+  max_time_s: 200
+  max_steps: 2000
+  ros2_enabled: true
+  seed: 4242
